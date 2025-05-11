@@ -1,0 +1,76 @@
+# ---------------------------------------
+# 1. IMPORTAR LIBRERÍAS
+# ---------------------------------------
+import requests
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Mostrar gráficos en línea (para Google Colab)
+%matplotlib inline
+
+# ---------------------------------------
+# 2. CONECTAR A LA API Y CARGAR DATOS
+# ---------------------------------------
+# Reemplaza esta URL con la API real proporcionada
+url = "https://api.ejemplo.com/dataset-clientes"
+
+# Obtener los datos desde la API
+response = requests.get(url)
+data = response.json()
+
+# Convertir JSON a DataFrame
+df = pd.DataFrame(data)
+
+# Mostrar una vista previa
+print("Vista previa de los datos:")
+display(df.head())
+
+# ---------------------------------------
+# 3. EXPLORACIÓN Y LIMPIEZA DE DATOS
+# ---------------------------------------
+print("\nInformación general del dataset:")
+df.info()
+
+print("\nValores nulos por columna:")
+print(df.isnull().sum())
+
+# Eliminar filas con valores nulos (puedes usar imputación si lo prefieres)
+df = df.dropna()
+
+# Revisar tipos de datos categóricos (convertir si es necesario)
+# Por ejemplo: convertir columnas como 'churn' a tipo categoría
+if df['churn'].dtype != 'category':
+    df['churn'] = df['churn'].astype('category')
+
+# ---------------------------------------
+# 4. ANÁLISIS EXPLORATORIO (EDA)
+# ---------------------------------------
+
+# Gráfico de barras - Distribución de churn
+plt.figure(figsize=(6,4))
+sns.countplot(x='churn', data=df)
+plt.title("Distribución de Evasión de Clientes (Churn)")
+plt.xlabel("Churn")
+plt.ylabel("Cantidad")
+plt.show()
+
+# Boxplot - cargos mensuales vs churn (si existe esa columna)
+if 'monthly_charges' in df.columns:
+    plt.figure(figsize=(8,5))
+    sns.boxplot(x='churn', y='monthly_charges', data=df)
+    plt.title("Cargos mensuales según churn")
+    plt.xlabel("Churn")
+    plt.ylabel("Cargos mensuales")
+    plt.show()
+
+# Churn por tipo de contrato (si existe)
+if 'contract_type' in df.columns:
+    plt.figure(figsize=(8,5))
+    sns.countplot(x='contract_type', hue='churn', data=df)
+    plt.title("Churn por tipo de contrato")
+    plt.xticks(rotation=45)
+    plt.show()
+
+# ---------------------------------------
+# 5. AGRUPACIONES Y ESTAD
